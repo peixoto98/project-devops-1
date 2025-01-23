@@ -52,8 +52,26 @@ jobs:
       - name: Install Ansible
         run: sh install_ansible.sh
         
-      - name: Run Ansible Playbook
-        run: ansible-playbook -i ./templates/hosts.cfg ./ansible/postgresql.yml
+      # - name: Run Ansible Playbook
+      #   run: ansible-playbook -i ./templates/hosts.cfg ./ansible/postgresql.yml
+
+      - name: Get Instance IPs
+        id: get_ips
+        run: |
+           echo "::set-output name=instance_ips::$(terraform output -json instance_ips | jq -r '.[]')"
+
+      - name: Generate Inventory
+        run: |
+          echo "[instances]" > ./templates/hosts.cfg
+          for ip in ${{ steps.get_ips.outputs.instance_ips }}; do
+          echo "$ip" >> ./templates/hosts.cfg
+          done
+
+      - name: Test SSH Connection
+        run: |
+          for ip in ${{ steps.get_ips.outputs.instance_ips }}; do
+            ssh -o StrictHostKeyChecking=no ubuntu@$ip "echo Connected!"
+          done
 
       - name: Terraform Deploy
         run: terraform destroy -auto-approve

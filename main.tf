@@ -20,11 +20,15 @@ resource "aws_instance" "postgresql" {
   tags = local.tags
 }
 
-resource "local_file" "hosts_cfg" {
-  content = templatefile("${path.module}/templates/hosts.tpl",
-    {
-      instances = aws_instance.postgresql[*].public_ip
-    }
-  )
-  filename = "${path.module}/templates/hosts.cfg"
+# resource "local_file" "hosts_cfg" {
+#   content = templatefile("${path.module}/templates/hosts.tpl",
+#     {
+#       instances = aws_instance.postgresql[*].public_ip
+#     }
+#   )
+#   filename = "${path.module}/templates/hosts.cfg"
+# }
+
+output "instance_ips" {
+  value = aws_instance.postgresql[*].public_ip
 }
