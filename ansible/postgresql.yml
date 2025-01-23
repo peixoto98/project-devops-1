@@ -1,0 +1,9 @@
+- name: Install and Configure PostgreSQL
+  hosts: instances
+  user: ubuntu
+  become: true
+  tasks:
+
+    - name: Install PostgreSQL
+      apt:
+        name: postgresql
