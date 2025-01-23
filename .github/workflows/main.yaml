@@ -17,6 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.5
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -32,3 +37,12 @@ jobs:
 
       - name: Terraform plan
         run: terraform plan
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve
+
+      - name: Test
+        run: cat ./templates/hosts.cfg; sleep 60
+
+      - name: Terraform destroy
+        run: terraform destroy -auto-approve
